@@ -1,9 +1,10 @@
+import { StarIcon } from "lucide-react";
+import Image from "next/image";
+
 import { Badge } from "@/app/_components/ui/badge";
 import { Button } from "@/app/_components/ui/button";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { Barbershop } from "@prisma/client";
-import { StarIcon } from "lucide-react";
-import Image from "next/image";
 
 interface BarbershopItemProps {
     barbershop: Barbershop
