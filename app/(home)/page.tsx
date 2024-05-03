@@ -1,10 +1,10 @@
 import Header from "../_components/header";
 import Search from "./_components/search";
-import Welcome from "./_components/welcome";
 import BookingItem from '../_components/booking-item';
 import BarbershopItem from "./_components/barbershop-item";
 import { Barbershop } from '@prisma/client';
 import { db } from "../_lib/prisma";
+import WelcomeDate from "./_components/welcome-date";
 
 export default async function Home() {
 
@@ -14,7 +14,7 @@ export default async function Home() {
     <div>
       <Header />
 
-      <Welcome />
+      <WelcomeDate />
 
       <div className="px-5 mt-6">
         <Search />
