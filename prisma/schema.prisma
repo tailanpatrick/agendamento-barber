@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,8 +8,8 @@ datasource db {
 }
 
 model User {
-  id      String    @id @default(uuid())
-  name    String
+  id       String    @id @default(uuid())
+  name     String
   bookings Booking[]
 }
 
@@ -24,8 +18,8 @@ model Barbershop {
   name     String
   address  String
   imageUrl String
-  services  Service[]
-  bookings  Booking[]
+  bookings Booking[]
+  services Service[]
 }
 
 model Service {
@@ -33,19 +27,19 @@ model Service {
   name         String
   price        Decimal    @db.Decimal(10, 2)
   barbershopId String
-  barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
   description  String
-  bookings      Booking[]
-  imageUrl String?
+  imageUrl     String?
+  bookings     Booking[]
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
 }
 
 model Booking {
   id           String     @id @default(uuid())
   barbershopId String
-  barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
   serviceId    String
-  service      Service    @relation(fields: [serviceId], references: [id])
   userId       String
+  date         DateTime   @db.Timestamp(6)
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
+  service      Service    @relation(fields: [serviceId], references: [id])
   user         User       @relation(fields: [userId], references: [id])
-  date         DateTime   @db.Timestamp
 }
