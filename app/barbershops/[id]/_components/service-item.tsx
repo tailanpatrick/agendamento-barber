@@ -1,13 +1,43 @@
+import SideMenu from "@/app/_components/side-menu";
 import { Button } from "@/app/_components/ui/button";
 import { Card, CardContent } from "@/app/_components/ui/card";
+import { Sheet, SheetContent, SheetTrigger } from "@/app/_components/ui/sheet";
 import { Service } from "@prisma/client";
 import Image from "next/image";
 
 interface ServiceItemProps {
     service: Service
+    isAuthenticated: boolean;
 }
 
-const ServiceItem = ({ service }: ServiceItemProps) => {
+const ServiceItem = ({ service, isAuthenticated }: ServiceItemProps) => {
+
+    const handleBookingClick = () => {
+        if (!isAuthenticated) {
+            return (
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <Button variant="secondary">
+                            Reservar
+                        </Button>
+                    </SheetTrigger>
+
+                    <SheetContent className="p-0">
+                        <SideMenu />
+                    </SheetContent>
+                </Sheet>
+            );
+
+        }
+        
+        else {
+            return (
+                <Button variant="secondary">
+                    Reservar
+                </Button>
+            )
+        }
+    }
 
     return (
         <Card>
@@ -30,14 +60,12 @@ const ServiceItem = ({ service }: ServiceItemProps) => {
 
                         <div className="flex items-center justify-between mt-3">
                             <p className="text-primary font-bold text-sm">{Intl.NumberFormat("pt-BR", {
-                                    style: "currency",
-                                    currency: "BRL"
-                                }).format(Number(service.price))}
+                                style: "currency",
+                                currency: "BRL"
+                            }).format(Number(service.price))}
                             </p>
-                            
-                            <Button variant="secondary">
-                                Reservar
-                            </Button>
+
+                            {handleBookingClick()}
                         </div>
                     </div>
                 </div>
