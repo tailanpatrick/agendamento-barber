@@ -4,17 +4,18 @@ import { Button } from "@/app/_components/ui/button";
 import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
-import { Service, Barbershop } from '@prisma/client';
+import { Service, Barbershop, Booking } from '@prisma/client';
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { generateDayTimeList } from "../_helpers/hours";
-import { format, setHours, setMinutes } from "date-fns";
+import { format, parseISO, setHours, setMinutes } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { saveBooking } from "../_actions/save-booking";
 import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { getDayBookings } from "../_actions/get-day-bookings";
 
 interface ServiceItemProps {
     barbershop: Barbershop;
@@ -25,14 +26,47 @@ interface ServiceItemProps {
 const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps) => {
     const { data } = useSession();
 
-    const router =  useRouter();
+    const router = useRouter();
 
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [hour, setHour] = useState<string | undefined>();
     const [submitIsLoading, setSubmitIsLoading] = useState(false);
     const [sheetIsOpen, setSheetIsOpen] = useState(false);
+    const [dayBookings, setDayBookings] = useState<Booking[]>([]);
 
-    const timeList = useMemo(() => date ? generateDayTimeList(date) : [], [date]);
+    useEffect(() => {
+        if (!date) return;
+
+        const refreshAvaliableHours = async () => {
+            const _dayBookings = await getDayBookings(date as Date, barbershop);
+            setDayBookings(_dayBookings);
+        }
+
+        refreshAvaliableHours();
+    }, [date, barbershop]);
+
+    const timeList = useMemo(() => {
+        if (!date) {
+            return [];
+        }
+
+        return generateDayTimeList(date).filter(time => {
+            const timeHour = Number(time.split(':')[0]);
+            const timeMinutes = Number(time.split(':')[1]);
+
+            const booking = dayBookings.find(booking => {
+                const bookingHour = new Date(booking.date).getHours();
+                const bookingMinutes = new Date(booking.date).getMinutes();
+
+                return bookingHour === timeHour && bookingMinutes === timeMinutes;
+            })
+
+            if (!booking) {
+                return true;
+            }
+            return false;
+        })
+    }, [date, dayBookings]);
 
     const handleDateClick = (date: Date | undefined) => {
         setDate(date);
