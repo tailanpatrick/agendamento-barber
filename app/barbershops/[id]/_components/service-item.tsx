@@ -12,7 +12,9 @@ import { format, setHours, setMinutes } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { saveBooking } from "../_actions/save-booking";
 import { useSession } from "next-auth/react";
-import { Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface ServiceItemProps {
     barbershop: Barbershop;
@@ -23,9 +25,12 @@ interface ServiceItemProps {
 const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps) => {
     const { data } = useSession();
 
+    const router =  useRouter();
+
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [hour, setHour] = useState<string | undefined>();
     const [submitIsLoading, setSubmitIsLoading] = useState(false);
+    const [sheetIsOpen, setSheetIsOpen] = useState(false);
 
     const timeList = useMemo(() => date ? generateDayTimeList(date) : [], [date]);
 
@@ -54,6 +59,22 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                 userId: (data.user as any).id,
                 date: newDate
             })
+
+            setSheetIsOpen(false);
+
+            toast('Agendamento realizado! ', {
+                description: format(newDate, "'Para' dd 'de' MMMM 'às' HH':'MM'h'", {
+                    locale: ptBR
+                }),
+                action: {
+                    label: 'Visualizar',
+                    onClick: () => router.push('/bookings')
+                }
+
+            })
+
+            setHour(undefined);
+            setDate(undefined);
         } catch (error) {
             console.log(error)
         } finally {
@@ -79,7 +100,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
         }
 
         return (
-            <Sheet>
+            <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
                 <SheetTrigger asChild>
                     <Button variant="secondary">
                         Reservar
@@ -188,8 +209,8 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                         <Button disabled={!hour || !date || submitIsLoading}
                             onClick={handleBookingSubmit}
                         >
-                        {submitIsLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-                        Confirmar Reserva
+                            {submitIsLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Confirmar Reserva
                         </Button>
                     </SheetFooter>
                 </SheetContent>
