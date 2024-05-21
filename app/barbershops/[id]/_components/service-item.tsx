@@ -8,7 +8,7 @@ import { Service, Barbershop, Booking } from '@prisma/client';
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { generateDayTimeList } from "../_helpers/hours";
-import { format, parseISO, setHours, setMinutes } from "date-fns";
+import { format, parseISO, setHours, setMinutes, isFuture } from 'date-fns';
 import { ptBR } from "date-fns/locale";
 import { saveBooking } from "../_actions/save-booking";
 import { useSession } from "next-auth/react";
@@ -38,12 +38,15 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
         if (!date) return;
 
         const refreshAvaliableHours = async () => {
+            // busca todos horários já agendados em uma barbearia
             const _dayBookings = await getDayBookings(date as Date, barbershop);
             setDayBookings(_dayBookings);
         }
 
         refreshAvaliableHours();
     }, [date, barbershop]);
+
+    // carrega na tela os horários disponíveis atualmente para uma barbearia
 
     const timeList = useMemo(() => {
         if (!date) {
@@ -61,10 +64,10 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                 return bookingHour === timeHour && bookingMinutes === timeMinutes;
             })
 
-            if (!booking) {
-                return true;
-            }
-            return false;
+            const timeDate = new Date(date);
+            timeDate.setHours(timeHour, timeMinutes, 0, 0);
+
+            return !booking && isFuture(timeDate);
         })
     }, [date, dayBookings]);
 
@@ -183,19 +186,22 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                     {date && (<div className="flex overflow-x-auto py-6 px-5 border-t
                         border-solid border-secondary [&::-webkit-scrollbar]:hidden gap-2">
 
-                        {timeList.map(time => (
+                        {timeList.length > 0 ? (
+                            timeList.map(time => (
 
-                            <Button variant={
-                                hour === time ? 'default' : 'outline'
-                            }
-                                className="rounded-full"
-                                key={time}
-                                onClick={() => handleHourClick(time)}
-                            >
-                                {time}
-                            </Button>
+                                <Button variant={
+                                    hour === time ? 'default' : 'outline'
+                                }
+                                    className="rounded-full"
+                                    key={time}
+                                    onClick={() => handleHourClick(time)}
+                                >
+                                    {time}
+                                </Button>
 
-                        ))}
+                            ))) : (
+                            <p>Não existem horários disponíveis</p>
+                        )}
 
                     </div>)
                     }

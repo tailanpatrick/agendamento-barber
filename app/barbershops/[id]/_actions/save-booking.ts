@@ -10,12 +10,15 @@ interface SaveBookingParams {
 }
 
 export const saveBooking = async (params : SaveBookingParams) => {
+
+    const utcDate = new Date(params.date.toISOString());
+
     await db.booking.create({
         data: {
             barbershopId: params.barbershopId,
             serviceId: params.serviceId,
             userId: params.userId,
-            date: params.date,
+            date: utcDate,
         }
     })
 }
