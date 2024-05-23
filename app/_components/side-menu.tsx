@@ -8,7 +8,7 @@ import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 const SideMenu = () => {
-    const { data, status } = useSession();
+    const { data } = useSession();
 
     const handleLogInClick = () => signIn("google");
 

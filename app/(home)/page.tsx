@@ -2,13 +2,38 @@ import Header from "../_components/header";
 import Search from "./_components/search";
 import BookingItem from '../_components/booking-item';
 import BarbershopItem from "./_components/barbershop-item";
-import { Barbershop } from '@prisma/client';
 import { db } from "../_lib/prisma";
 import WelcomeDate from "./_components/welcome-date";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+
+import { Badge } from "@/app/_components/ui/badge";
 
 export default async function Home() {
+  const session = await getServerSession(authOptions);
+  const currentDate = new Date();
 
-  const barbershops = await db.barbershop.findMany({});
+  const [barbershops, confirmedBookings] = await Promise.all([
+    db.barbershop.findMany({}),
+
+    session?.user ? await db.booking.findMany({
+      where: {
+        date: {
+          gte: currentDate
+        },
+        userId: (session.user as any).id
+      },
+      orderBy: {
+        date: 'asc'
+      },
+
+      include: {
+        service: true,
+        barbershop: true
+      }
+    }) : Promise.resolve()
+  ])
+
 
   return (
     <div>
@@ -21,37 +46,49 @@ export default async function Home() {
       </div>
 
       <div className="px-5 mt-6">
-        <h2 className="text-xs ml-2 mb-3 uppercase text-gray-400 text-bold">
-          Agendamentos
-        </h2>
-        {/* <BookingItem /> */}
+
+        {session?.user &&
+          (<h2 className="text-xs ml-2 mb-3 uppercase text-gray-400 text-bold">
+            Agendamentos próximos
+          </h2>)
+        }
+
+        <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+          {session?.user && (confirmedBookings && confirmedBookings.length ? confirmedBookings.map(booking => (
+            <BookingItem booking={booking} key={booking.id} />
+          )) : (
+            <Badge variant="secondary">
+              <p>Nenhum agendamento próximo</p>
+            </Badge>
+          ))}
+        </div>
       </div>
 
       <div className="mt-6">
 
         <h2 className="px-5 text-xs mb-3 uppercase text-gray-400 font-bold">Recomendados</h2>
-        
-        <div className="flex px-5 gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden"> 
+
+        <div className="flex px-5 gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
           {barbershops.map((barbershop) => (
-              <BarbershopItem key={barbershop.id} barbershop={barbershop}/>
+            <BarbershopItem key={barbershop.id} barbershop={barbershop} />
           ))}
         </div>
 
       </div>
 
       <div className="mt-6 mb-[3.75rem]">
-        
+
         <h2 className="px-5 text-xs mb-3 uppercase text-gray-400 font-bold">Populares</h2>
-        
-        <div className="flex px-5 gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden"> 
+
+        <div className="flex px-5 gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
           {barbershops.map((barbershop) => (
-              <BarbershopItem key={barbershop.id} barbershop={barbershop}/>
+            <BarbershopItem key={barbershop.id} barbershop={barbershop} />
           ))}
         </div>
 
       </div>
 
-      
+
     </div>
   );
 }
