@@ -33,12 +33,13 @@ const BarbershopItem = ({ barbershop }: BarbershopItemProps) => {
                     </div>
 
                     <Image
-                        fill
                         className="rounded-2xl"
                         src={barbershop.imageUrl}
                         style={{
-                            objectFit: "cover"
+                            objectFit: "cover",
                         }}
+                        fill
+                        sizes="100%"
                         alt={barbershop.name}
                     />
                 </div>

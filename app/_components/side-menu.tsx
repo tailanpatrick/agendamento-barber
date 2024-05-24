@@ -13,7 +13,6 @@ const SideMenu = () => {
     const handleLogInClick = () => signIn("google");
 
     const handleLogoutClick = () => signOut();
-
     return ( <>
         <SheetHeader className="text-left border-b border-solid border-secondary p-5">
                             <SheetTitle>Menu</SheetTitle>

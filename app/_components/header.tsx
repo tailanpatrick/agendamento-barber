@@ -23,6 +23,9 @@ const Header = () => {
                     alt="FSW Barber"
                     height={20}
                     width={120}
+                    style={{
+                        width: 'auto'
+                    }}
                     onClick={handleLogoClick}
                 />
 

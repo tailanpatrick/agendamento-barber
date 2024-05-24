@@ -270,6 +270,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                             style={{
                                 objectFit: 'contain'
                             }}
+                            sizes="100%"
                             className="rounded-lg"
                         />
                     </div>
