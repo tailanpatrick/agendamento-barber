@@ -30,12 +30,13 @@ const BookingItem = ({ booking }: BookingItemProps) => {
         setIsDeleteLoading(true);
 
         try {
-            const bookingCancelled = await cancelBooking(booking.id);
+            const bookingCancelled = await cancelBooking(booking);
             const barberShopCancelled = bookingCancelled.barbershop.name;
-            const dateHourCancelled = format(bookingCancelled.date, "em dd 'de' MM, às HH:mm'h'", {
+            const dateHourCancelled = format(bookingCancelled.date, "em dd 'de' MMMM, 'às' HH:mm'h'", {
                 locale: ptBR
             })
-
+            console.log(dateHourCancelled)
+            console.log(barberShopCancelled)
             toast.success(`Agendamento em ${barberShopCancelled}, ${dateHourCancelled}, cancelado com sucesso.`)
         } catch(err) {
 
