@@ -12,6 +12,17 @@ import { cancelBooking } from "../_actions/cancel-booking";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger
+} from "./ui/alert-dialog";
 
 interface BookingItemProps {
     booking: Prisma.BookingGetPayload<{
@@ -37,7 +48,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
             })
 
             toast.success(`Agendamento em ${barberShopCancelled}, ${dateHourCancelled}, cancelado com sucesso.`)
-        } catch(err) {
+        } catch (err) {
 
         } finally {
             setIsDeleteLoading(false);
@@ -160,13 +171,37 @@ const BookingItem = ({ booking }: BookingItemProps) => {
                         <SheetClose asChild>
                             <Button variant="secondary" className="w-full">Voltar</Button>
                         </SheetClose>
-                        <Button variant="destructive"
-                            className="w-full"
-                            disabled={isBookingFinalized || isDeleteLoading}
-                            onClick={handleCancelClick}
-                        >
-                        {isDeleteLoading && (<Loader2 className="mr-2 h-4 w-4 animate-spin" />)}
-                        Cancelar Reserva</Button>
+
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive"
+                                    className="w-full"
+                                    disabled={isBookingFinalized || isDeleteLoading}
+                                >
+                                    {isDeleteLoading && (<Loader2 className="mr-2 h-4 w-4 animate-spin" />)}
+                                    Cancelar Agendamento</Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="w-[90%]">
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Tem certeza que deseja cancelar esse agendamento?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Uma vez cancelado, não será possível reverter essa ação!
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter className="flex gap-3">
+                                    <AlertDialogCancel className="w-full">Voltar</AlertDialogCancel>
+                                    <AlertDialogAction 
+                                        className="w-full" 
+                                        onClick={handleCancelClick}
+                                        disabled={isDeleteLoading}
+                                    > 
+                                    {isDeleteLoading && (<Loader2 className="mr-2 h-4 w-4 animate-spin" />)}
+                                    Cancelar Agendamento
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+
                     </SheetFooter>
 
                 </div>
