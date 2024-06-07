@@ -16,6 +16,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { getDayBookings } from "../_actions/get-day-bookings";
+import { ScrollArea } from "@/app/_components/ui/scroll-area"
 
 interface ServiceItemProps {
     barbershop: Barbershop;
@@ -143,8 +144,9 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                         Reservar
                     </Button>
                 </SheetTrigger>
+                
+                <SheetContent className="p-0 overflow-auto pb-4">
 
-                <SheetContent className="p-0">
                     <SheetHeader className="text-left border-b border-solid border-secondary p-5">
                         <SheetTitle>Fazer Reserva</SheetTitle>
                     </SheetHeader>
@@ -183,6 +185,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                     {/* Mostrar lista de horários apenas se alguma data estiver selecionada*/}
 
 
+
                     {date && (<div className="flex overflow-x-auto py-6 px-5 border-t
                         border-solid border-secondary [&::-webkit-scrollbar]:hidden gap-2">
 
@@ -205,6 +208,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
 
                     </div>)
                     }
+
 
                     <div className="py-6 px-5 border-t border-solid border-secondary">
                         <Card>
@@ -253,8 +257,9 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                             Confirmar Reserva
                         </Button>
                     </SheetFooter>
+
                 </SheetContent>
-            </Sheet>
+            </Sheet >
         )
 
     }
