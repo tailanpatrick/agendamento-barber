@@ -144,7 +144,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                     </Button>
                 </SheetTrigger>
                 
-                <SheetContent className="p-0 overflow-auto pb-4">
+                <SheetContent className="p-0 overflow-auto pb-6">
 
                     <SheetHeader className="text-left border-b border-solid border-secondary p-5">
                         <SheetTitle>Fazer Reserva</SheetTitle>
