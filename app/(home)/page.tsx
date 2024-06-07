@@ -5,7 +5,7 @@ import BarbershopItem from "./_components/barbershop-item";
 import { db } from "../_lib/prisma";
 import WelcomeDate from "./_components/welcome-date";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "../_lib/auth";
 
 import { Badge } from "@/app/_components/ui/badge";
 
