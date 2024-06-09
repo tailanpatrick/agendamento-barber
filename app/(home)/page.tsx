@@ -13,8 +13,13 @@ export default async function Home() {
   const session = await getServerSession(authOptions);
   const currentDate = new Date();
 
-  const [barbershops, confirmedBookings] = await Promise.all([
+  const [barbershops, recomendedBarbershops, confirmedBookings] = await Promise.all([
     db.barbershop.findMany({}),
+    db.barbershop.findMany({
+      orderBy: {
+        id: 'desc'
+      }
+    }),
 
     session?.user ? await db.booking.findMany({
       where: {
@@ -84,7 +89,7 @@ export default async function Home() {
         <h2 className="px-5 text-xs mb-3 uppercase text-gray-400 font-bold">Populares</h2>
 
         <div className="flex px-5 gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
-          {barbershops.map((barbershop) => (
+          {recomendedBarbershops.map((barbershop) => (
             <div key={barbershop.id} className="min-w-[167px] max-w-[167px]">
 
               <BarbershopItem barbershop={barbershop} />
